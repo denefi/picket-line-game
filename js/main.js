@@ -4,12 +4,17 @@ class Game {
         this.enemy = null;
         this.obstacles = [];
         this.boardElm = document.getElementById("board");
+        this.boardElm.id = "board";
     }
     startGame() {
-        this.player = new Player();
-        this.enemy = new Enemy();
+        this.createBasicElements();
         this.setEventListeners();
         this.startGameLogik();
+    }
+    createBasicElements() {
+        this.player = new Player(20, [0, 0]);
+        this.boardElm.appendChild(this.player.playerElm);
+        this.enemy = new Enemy();
     }
     setEventListeners() {
         document.addEventListener("keydown", event => {
@@ -27,12 +32,37 @@ class Game {
 }
 
 class Player {
+    //expects size as Integer and position as array [x,y]
+    //both values are in percentage relating to the board div
+    constructor(size, position) {
+        this.size = size;
+        this.posX = position[0];
+        this.posY = position[1];
+        this.createDiv();
+    }
+    createDiv() {
+        // Creates DOM Element and sets id, size and position on board. 
+        this.playerElm = document.createElement("div");
+        this.playerElm.id = "player";
+        this.playerElm.style.height = this.size + "%";
+        this.playerElm.style.width = this.size / 16 * 9 + "%";
+        this.playerElm.style.bottom = this.posY + "%";
+        this.playerElm.style.left = this.posX + "%";
+    }
     moveUp() {
-        console.log("player moves up")
-            
+        this.posY += 20;
+        if (this.posY + this.size > 100) {
+            this.posY = 100 - this.size;
+        }
+        console.log(this.playerElm.style.bottom)
+        this.playerElm.style.bottom = this.posY + "%";
     }
     moveDown() {
-        console.log("player moves down")
+        this.posY -= 20;
+        if (this.posY  < 0) {
+            this.posY = 0;
+        }
+        this.playerElm.style.bottom = this.posY + "%";
     }
 }
 class Enemy {}

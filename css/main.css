@@ -10,6 +10,15 @@ header {
 #board {
     height: 80vh;
     width: 142vh;
-    background-color: black;
+    background-color: wheat;
     margin: 5vh auto;
+    position: relative ;
+}
+#player {
+    position: absolute;
+    background-color: aqua;
+}
+#enemy {
+    position: absolute;
+    background-color: red;
 }

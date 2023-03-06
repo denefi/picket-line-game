@@ -24,7 +24,7 @@ Boss with automatic moving and shooting.
     - Creates new enemy
     - sets event listeners
     - intervalls
-- [ ] Player Class
+- [x] Player Class
   - Properties
     - size
     - position (x, y)
