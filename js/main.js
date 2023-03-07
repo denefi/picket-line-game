@@ -15,7 +15,7 @@ class Game {
         this.boardElm.id = "board";
         this.player = new Player(20, [0, 0]);
         this.boardElm.appendChild(this.player.playerElm);
-        this.enemy = new Enemy(20, [0, 50]);
+        this.enemy = new Enemy(20, [100, 50]);
         this.boardElm.appendChild(this.enemy.enemyElm);
     }
     setEventListeners() {
@@ -29,10 +29,17 @@ class Game {
     }
     startGameLogik() {
         let timeCounter = 0;
-        setInterval(() => {
+        const gameTimer = setInterval(() => {
             timeCounter++;
             if (timeCounter % 17 === 0) {
                 this.enemy.move();
+                this.obstacles.forEach((obstacle) => {
+                    obstacle.move();
+                    if (obstacle.outOfGame()) {
+                        obstacle.delete(this.obstacles);
+                    }
+                });
+                this.enemy.shoot(this.obstacles);
             }
             if (timeCounter > 9007199254740990) {
                 timeCounter = 0;
@@ -64,7 +71,6 @@ class Player {
         if (this.posY + this.size > 100) {
             this.posY = 100 - this.size;
         }
-        console.log(this.playerElm.style.bottom);
         this.playerElm.style.bottom = this.posY + "%";
     }
     moveDown() {
@@ -78,7 +84,7 @@ class Player {
 class Enemy {
     constructor(size, positionArr) {
         this.size = size;
-        this.posX = (positionArr[0] / 16) * 9;
+        this.posX = positionArr[0];
         this.posY = positionArr[1];
         this.movingDirection = "up";
         this.createElm();
@@ -89,13 +95,12 @@ class Enemy {
         this.enemyElm.style.height = this.size + "%";
         this.enemyElm.style.width = (this.size / 16) * 9 + "%";
         this.enemyElm.style.bottom = this.posY + "%";
-        this.enemyElm.style.right = this.posX + "%";
+        this.enemyElm.style.left = this.posX - (this.size / 16) * 9 + "%";
     }
     move() {
         if (this.movingDirection === "up") {
             if (this.posY >= 100 - this.size) {
                 this.movingDirection = "down";
-                console.log("change direction");
             } else {
                 this.posY++;
             }
@@ -108,6 +113,54 @@ class Enemy {
         }
 
         this.enemyElm.style.bottom = this.posY + "%";
+    }
+    shoot(obstacleArr) {
+        if (this.posY % 20 === 0) {
+            console.log("Bezos shot an obstacle at you : 0");
+            //calculate the start position of the obstacle which is directly
+            //left to the enemy. The Y axis is inherited form enemy.
+            const positionX = this.posX - (this.size / 16) * 9;
+            const obstacle = new Obstacle(
+                20,
+                [positionX, this.posY],
+                "killer-package"
+            );
+            obstacleArr.push(obstacle);
+        }
+    }
+}
+
+class Obstacle {
+    constructor(size = 20, positionArr = [0, 0], obstacleType = "") {
+        this.size = size;
+        [this.posX, this.posY] = positionArr;
+        this.type = obstacleType;
+        this.obstacleElm = null;
+        this.createObstacleElm();
+        this.appendObstacleElmToDom();
+    }
+    createObstacleElm() {
+        this.obstacleElm = document.createElement("div");
+        this.obstacleElm.classList += "obstacle";
+        this.obstacleElm.style.height = this.size + "%";
+        this.obstacleElm.style.width = (this.size / 16) * 9 + "%";
+        this.obstacleElm.style.bottom = this.posY + "%";
+        this.obstacleElm.style.left = this.posX - (this.size / 16) * 9 + "%";
+    }
+    appendObstacleElmToDom() {
+        const parentElm = document.getElementById("board");
+        parentElm.appendChild(this.obstacleElm);
+    }
+    move() {
+        this.posX = this.posX - 2;
+        this.obstacleElm.style.left = this.posX - (this.size / 16) * 9 + "%";
+    }
+    delete(obstacleArr) {
+        this.obstacleElm.remove();
+        obstacleArr.shift();
+    }
+    outOfGame() {
+        return this.posX < 0;
     }
 }
 
