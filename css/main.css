@@ -12,7 +12,8 @@ header {
     width: 142vh;
     background-color: wheat;
     margin: 5vh auto;
-    position: relative ;
+    position: relative;
+    overflow: hidden;
 }
 #player {
     position: absolute;
@@ -21,4 +22,8 @@ header {
 #enemy {
     position: absolute;
     background-color: red;
+}
+.obstacle {
+    position: absolute;
+    background-color: grey;
 }
