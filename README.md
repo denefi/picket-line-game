@@ -11,9 +11,9 @@ Boss with automatic moving and shooting.
 ![Board Wireframe](./img/game-board.png) 
 
 - [x] Initial Setup: A page with a 16:9 board that is defined with viewport
-- [ ] Start game button
-- [ ] Game Over Page
-- [ ] Game Class
+- [x] Start game button
+- [x] Game Over Page
+- [x] Game Class
   - Properties
     - Obstacles Array
     - player
@@ -54,5 +54,5 @@ Boss with automatic moving and shooting.
     - delete
     - Move
     - Throw obstacle
-  - [ ] collision detection
+- [x] collision detection
   

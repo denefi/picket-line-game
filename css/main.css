@@ -7,6 +7,10 @@ header {
     height: 10vh;
     background-color: aqua;
 }
+#start-game {
+    margin: 0 auto;
+    display: block;
+}
 #board {
     height: 80vh;
     width: 142vh;
