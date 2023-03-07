@@ -1,9 +1,15 @@
+//helper Function
+function widthRatioConverter(size = 0) {
+    //takes the size of the width an converts it to 16:9 ratio for board.
+    return (size / 16) * 9;
+}
 class Game {
     constructor() {
         this.boardElm = null;
         this.player = null;
         this.enemy = null;
         this.obstacles = [];
+        this.gameTimer = null;
     }
     startGame() {
         this.createBasicElements();
@@ -12,7 +18,7 @@ class Game {
     }
     createBasicElements() {
         this.boardElm = document.getElementById("board");
-        this.boardElm.id = "board";
+        this.boardElm.innerHTML = "";
         this.player = new Player(20, [0, 0]);
         this.boardElm.appendChild(this.player.playerElm);
         this.enemy = new Enemy(20, [100, 50]);
@@ -29,12 +35,16 @@ class Game {
     }
     startGameLogik() {
         let timeCounter = 0;
-        const gameTimer = setInterval(() => {
+        this.gameTimer = setInterval(() => {
             timeCounter++;
             if (timeCounter % 17 === 0) {
                 this.enemy.move();
                 this.obstacles.forEach((obstacle) => {
                     obstacle.move();
+                    if (obstacle.detectCollision(this.player)) {
+                        console.log("Game Over");
+                        this.stopGame();
+                    }
                     if (obstacle.outOfGame()) {
                         obstacle.delete(this.obstacles);
                     }
@@ -46,13 +56,19 @@ class Game {
             }
         }, 1);
     }
+    stopGame() {
+        clearInterval(this.gameTimer);
+        this.obstacles = [];
+        this.boardElm.innerHTML = "<h1>Game Over</h1>";
+    }
 }
 
 class Player {
     //expects size as Integer and position as array [x,y]
     //both values are in percentage relating to the board div
     constructor(size, position) {
-        this.size = size;
+        this.height = size;
+        this.width = widthRatioConverter(size);
         this.posX = position[0];
         this.posY = position[1];
         this.createElement();
@@ -61,15 +77,15 @@ class Player {
         // Creates DOM Element and sets id, size and position on board.
         this.playerElm = document.createElement("div");
         this.playerElm.id = "player";
-        this.playerElm.style.height = this.size + "%";
-        this.playerElm.style.width = (this.size / 16) * 9 + "%";
+        this.playerElm.style.height = this.height + "%";
+        this.playerElm.style.width = this.width + "%";
         this.playerElm.style.bottom = this.posY + "%";
         this.playerElm.style.left = this.posX + "%";
     }
     moveUp() {
         this.posY += 20;
-        if (this.posY + this.size > 100) {
-            this.posY = 100 - this.size;
+        if (this.posY + this.height > 100) {
+            this.posY = 100 - this.height;
         }
         this.playerElm.style.bottom = this.posY + "%";
     }
@@ -83,8 +99,9 @@ class Player {
 }
 class Enemy {
     constructor(size, positionArr) {
-        this.size = size;
-        this.posX = positionArr[0];
+        this.height = size;
+        this.width = widthRatioConverter(size);
+        this.posX = positionArr[0] - this.width;
         this.posY = positionArr[1];
         this.movingDirection = "up";
         this.createElm();
@@ -92,20 +109,20 @@ class Enemy {
     createElm() {
         this.enemyElm = document.createElement("div");
         this.enemyElm.id = "enemy";
-        this.enemyElm.style.height = this.size + "%";
-        this.enemyElm.style.width = (this.size / 16) * 9 + "%";
+        this.enemyElm.style.height = this.height + "%";
+        this.enemyElm.style.width = this.width + "%";
         this.enemyElm.style.bottom = this.posY + "%";
-        this.enemyElm.style.left = this.posX - (this.size / 16) * 9 + "%";
+        this.enemyElm.style.left = this.posX + "%";
     }
     move() {
         if (this.movingDirection === "up") {
-            if (this.posY >= 100 - this.size) {
+            if (this.posY >= 100) {
                 this.movingDirection = "down";
             } else {
                 this.posY++;
             }
         } else if (this.movingDirection === "down") {
-            if (this.posY <= 0) {
+            if (this.posY <= 0 - this.height) {
                 this.movingDirection = "up";
             } else {
                 this.posY--;
@@ -116,13 +133,12 @@ class Enemy {
     }
     shoot(obstacleArr) {
         if (this.posY % 20 === 0) {
-            console.log("Bezos shot an obstacle at you : 0");
             //calculate the start position of the obstacle which is directly
             //left to the enemy. The Y axis is inherited form enemy.
-            const positionX = this.posX - (this.size / 16) * 9;
+            const obstaclePositionX = this.posX - this.width;
             const obstacle = new Obstacle(
                 20,
-                [positionX, this.posY],
+                [obstaclePositionX, this.posY],
                 "killer-package"
             );
             obstacleArr.push(obstacle);
@@ -132,7 +148,8 @@ class Enemy {
 
 class Obstacle {
     constructor(size = 20, positionArr = [0, 0], obstacleType = "") {
-        this.size = size;
+        this.height = size;
+        this.width = widthRatioConverter(size);
         [this.posX, this.posY] = positionArr;
         this.type = obstacleType;
         this.obstacleElm = null;
@@ -142,10 +159,10 @@ class Obstacle {
     createObstacleElm() {
         this.obstacleElm = document.createElement("div");
         this.obstacleElm.classList += "obstacle";
-        this.obstacleElm.style.height = this.size + "%";
-        this.obstacleElm.style.width = (this.size / 16) * 9 + "%";
+        this.obstacleElm.style.height = this.height + "%";
+        this.obstacleElm.style.width = this.width + "%";
         this.obstacleElm.style.bottom = this.posY + "%";
-        this.obstacleElm.style.left = this.posX - (this.size / 16) * 9 + "%";
+        this.obstacleElm.style.left = this.posX + "%";
     }
     appendObstacleElmToDom() {
         const parentElm = document.getElementById("board");
@@ -153,7 +170,18 @@ class Obstacle {
     }
     move() {
         this.posX = this.posX - 2;
-        this.obstacleElm.style.left = this.posX - (this.size / 16) * 9 + "%";
+        this.obstacleElm.style.left = this.posX + "%";
+    }
+    detectCollision(otherElement) {
+        if (
+            otherElement.posX < this.posX + this.width &&
+            otherElement.posX + otherElement.width > this.posX &&
+            otherElement.posY < this.posY + this.height &&
+            otherElement.posY + otherElement.width > this.posY
+        ) {
+            return true;
+        }
+        return false;
     }
     delete(obstacleArr) {
         this.obstacleElm.remove();
@@ -164,5 +192,12 @@ class Obstacle {
     }
 }
 
-const myGame = new Game();
-myGame.startGame();
+let game = null;
+const startGameButton = document.getElementById("start-game");
+startGameButton.addEventListener("click", () => {
+    if (game) {
+        game.stopGame();
+    }
+    game = new Game();
+    game.startGame();
+});
