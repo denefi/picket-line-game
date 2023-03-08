@@ -1,5 +1,5 @@
 // audio files
-const evil_laugh = new Audio("./../audio/evil-laugh.opus");
+const evil_laugh = new Audio("./audio/evil-laugh.opus");
 //helper Function
 function widthRatioConverter(size = 0) {
     //takes the size of the width an converts it to 16:9 ratio for board.
