@@ -1,3 +1,5 @@
+// audio files
+const evil_laugh = new Audio("./../audio/evil-laugh.opus");
 //helper Function
 function widthRatioConverter(size = 0) {
     //takes the size of the width an converts it to 16:9 ratio for board.
@@ -5,6 +7,7 @@ function widthRatioConverter(size = 0) {
 }
 class Game {
     constructor() {
+        this.gameControlElm = null;
         this.boardElm = null;
         this.player = null;
         this.enemy = null;
@@ -17,12 +20,21 @@ class Game {
         this.startGameLogik();
     }
     createBasicElements() {
+        this.lifesElm = document.getElementById("lifes");
         this.boardElm = document.getElementById("board");
         this.boardElm.innerHTML = "";
-        this.player = new Player(15, [0, 0]);
+        this.player = new Player(15, [0, 0], 3);
         this.boardElm.appendChild(this.player.playerElm);
         this.enemy = new Enemy(20, [100, 50]);
         this.boardElm.appendChild(this.enemy.enemyElm);
+        this.displayLifes(this.player);
+    }
+    displayLifes(creature) {
+        this.lifesElm.innerHTML = "";
+        for (let i = 1; i <= creature.lifes; i++) {
+            const oneLife = document.createElement("div");
+            this.lifesElm.appendChild(oneLife);
+        }
     }
     setEventListeners() {
         document.addEventListener("keydown", (event) => {
@@ -42,8 +54,14 @@ class Game {
                 this.obstacles.forEach((obstacle) => {
                     obstacle.move();
                     if (obstacle.detectCollision(this.player)) {
-                        console.log("Game Over");
-                        this.stopGame();
+                        this.player.lifes--;
+                        this.displayLifes(this.player);
+                        obstacle.delete(this.obstacles);
+                        console.log(`Lifes left: ${this.player.lifes}`);
+                        if (this.player.lifes <= 0) {
+                            this.stopGame();
+                            evil_laugh.play();
+                        }
                     }
                     if (obstacle.outOfGame()) {
                         obstacle.delete(this.obstacles);
@@ -60,15 +78,24 @@ class Game {
     }
     stopGame() {
         clearInterval(this.gameTimer);
+        const childNodes = this.boardElm.childNodes;
+        childNodes.forEach((node) => node.remove());
         this.obstacles = [];
-        this.boardElm.innerHTML = "<h1>Game Over</h1>";
+        this.boardElm.innerHTML = "";
+        const gameOverH1 = document.createElement("h1");
+        gameOverH1.innerText = "Game Over";
+        const gameOverImg = document.createElement("div");
+        gameOverImg.id = "game-over-img";
+        this.boardElm.appendChild(gameOverH1);
+        this.boardElm.appendChild(gameOverImg);
     }
 }
 
 class Player {
     //expects size as Integer and position as array [x,y]
     //both values are in percentage relating to the board div
-    constructor(size, position) {
+    constructor(size, position, lifes = 3) {
+        this.lifes = lifes;
         this.height = size;
         this.width = widthRatioConverter(size);
         this.posX = position[0];
@@ -200,6 +227,8 @@ startGameButton.addEventListener("click", () => {
     if (game) {
         game.stopGame();
     }
+    evil_laugh.pause();
+    evil_laugh.currentTime = 0;
     game = new Game();
     game.startGame();
 });
