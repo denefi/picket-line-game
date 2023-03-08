@@ -19,7 +19,7 @@ class Game {
     createBasicElements() {
         this.boardElm = document.getElementById("board");
         this.boardElm.innerHTML = "";
-        this.player = new Player(20, [0, 0]);
+        this.player = new Player(15, [0, 0]);
         this.boardElm.appendChild(this.player.playerElm);
         this.enemy = new Enemy(20, [100, 50]);
         this.boardElm.appendChild(this.enemy.enemyElm);
@@ -38,7 +38,7 @@ class Game {
         this.gameTimer = setInterval(() => {
             timeCounter++;
             if (timeCounter % 17 === 0) {
-                this.enemy.move();
+                this.enemy.move(3);
                 this.obstacles.forEach((obstacle) => {
                     obstacle.move();
                     if (obstacle.detectCollision(this.player)) {
@@ -49,6 +49,8 @@ class Game {
                         obstacle.delete(this.obstacles);
                     }
                 });
+            }
+            if (timeCounter % 100 === 0) {
                 this.enemy.shoot(this.obstacles);
             }
             if (timeCounter > 9007199254740990) {
@@ -83,14 +85,14 @@ class Player {
         this.playerElm.style.left = this.posX + "%";
     }
     moveUp() {
-        this.posY += 20;
+        this.posY += 10;
         if (this.posY + this.height > 100) {
             this.posY = 100 - this.height;
         }
         this.playerElm.style.bottom = this.posY + "%";
     }
     moveDown() {
-        this.posY -= 20;
+        this.posY -= 5;
         if (this.posY < 0) {
             this.posY = 0;
         }
@@ -114,30 +116,30 @@ class Enemy {
         this.enemyElm.style.bottom = this.posY + "%";
         this.enemyElm.style.left = this.posX + "%";
     }
-    move() {
+    move(speed = 1) {
         if (this.movingDirection === "up") {
             if (this.posY >= 100) {
                 this.movingDirection = "down";
             } else {
-                this.posY++;
+                this.posY += speed;
             }
         } else if (this.movingDirection === "down") {
             if (this.posY <= 0 - this.height) {
                 this.movingDirection = "up";
             } else {
-                this.posY--;
+                this.posY -= speed;
             }
         }
 
         this.enemyElm.style.bottom = this.posY + "%";
     }
     shoot(obstacleArr) {
-        if (this.posY % 20 === 0) {
+        if (Math.random() > 0.4) {
             //calculate the start position of the obstacle which is directly
             //left to the enemy. The Y axis is inherited form enemy.
             const obstaclePositionX = this.posX - this.width;
             const obstacle = new Obstacle(
-                20,
+                10,
                 [obstaclePositionX, this.posY],
                 "killer-package"
             );

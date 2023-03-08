@@ -1,27 +1,55 @@
+@font-face {
+    font-family: "marker";
+    font-weight: 400;
+    src: url("./../fonts/Permanent_Marker/PermanentMarker-Regular.ttf");
+}
 body {
     height: 100vh;
     width: 100vw;
+    position: relative;
 }
 header {
     text-align: center;
     height: 10vh;
-    background-color: aqua;
+    background-color: black;
 }
-#start-game {
-    margin: 0 auto;
-    display: block;
+h1 {
+    font-family: marker, sans-serif;
+    font-weight: 400;
+    font-size: 6vh;
+    color: red;
+}
+article {
+    position: absolute;
+    top: 20vh;
+    left: 2vw;
+    width: 10vw;
+    border: #000;
+    border-style: solid;
+}
+.button-container {
+    height: 10vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+article p {
+    font-size: 1em;
+    font-family: sans-serif;
+    font-weight: bold;
 }
 #board {
     height: 80vh;
     width: 142vh;
-    background-color: wheat;
-    margin: 5vh auto;
+    background-image: url("./../img/background1.png");
+    background-size: contain;
+    margin: 0 auto;
     position: relative;
     overflow: hidden;
 }
 #player {
     position: absolute;
-    background-color: aqua;
     background-image: url("./../img/union.png");
     background-size: contain;
 }
@@ -36,4 +64,35 @@ header {
     background-color: grey;
     background-image: url("./../img/killer-package.png");
     background-size: contain;
+}
+
+/* Button design by Michael McMillan */
+#start-game {
+    font-family: "Open Sans", sans-serif;
+    font-size: 16px;
+    letter-spacing: 2px;
+    text-decoration: none;
+    text-transform: uppercase;
+    color: #000;
+    cursor: pointer;
+    border: 3px solid;
+    padding: 0.25em 0.5em;
+    box-shadow: 1px 1px 0px 0px, 2px 2px 0px 0px, 3px 3px 0px 0px,
+        4px 4px 0px 0px, 5px 5px 0px 0px;
+    position: relative;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+}
+
+#start-game:active {
+    box-shadow: 0px 0px 0px 0px;
+    top: 5px;
+    left: 5px;
+}
+
+@media (min-width: 768px) {
+    #start-game {
+        padding: 0.25em 0.75em;
+    }
 }
