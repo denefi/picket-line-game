@@ -20,33 +20,51 @@ h1 {
     color: red;
 }
 article {
-    position: absolute;
-    top: 20vh;
-    left: 2vw;
-    width: 10vw;
+    width: 40%;
     border: #000;
+    background-color: snow;
     border-style: solid;
 }
-.button-container {
+#game-control-container {
     height: 10vh;
+    margin: 0 auto;
+    width: calc(75vh / 9 * 16);
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
 }
-
+#lifes {
+    width: 25%;
+    display: flex;
+    justify-content: left;
+}
+#lifes > div {
+    margin-left: 2px;
+    height: 8vh;
+    width: 8vh;
+    background-image: url("./../img/star.png");
+    background-size: contain;
+}
+#score {
+    width: 25%;
+}
 article p {
     font-size: 1em;
     font-family: sans-serif;
     font-weight: bold;
 }
 #board {
-    height: 80vh;
-    width: 142vh;
+    height: 75vh;
+    width: calc(75vh / 9 * 16);
     background-image: url("./../img/background1.png");
     background-size: contain;
     margin: 0 auto;
     position: relative;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
 }
 #player {
     position: absolute;
@@ -66,6 +84,13 @@ article p {
     background-size: contain;
 }
 
+#game-over-img {
+    width: 50vh;
+    height: 50vh;
+    background-image: url("./../img/game-over.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+}
 /* Button design by Michael McMillan */
 #start-game {
     font-family: "Open Sans", sans-serif;

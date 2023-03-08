@@ -5,6 +5,11 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Picket Line</title>
+        <link
+            rel="shortcut icon"
+            href="./img/favicon.ico"
+            type="image/x-icon"
+        />
         <link rel="stylesheet" href="./css/css-reset.css" />
         <link rel="stylesheet" href="./css/main.css" />
     </head>
@@ -12,17 +17,24 @@
         <header>
             <h1>Picket Line</h1>
         </header>
-        <div class="button-container">
+        <div id="game-control-container">
+            <div id="lifes"></div>
             <button id="start-game">Start Game</button>
+            <div id="score"></div>
         </div>
-        <article>
-            <p>
-                You are trying to unionize your warehouse, but Jeffs Robots are
-                after you! Try to talk to as many collegues as possible before
-                the get you!
-            </p>
-        </article>
-        <div id="board"></div>
+        <div id="board">
+            <article>
+                <p>
+                    You are trying to unionize your warehouse, but Jeffs Robots
+                    are after you! Try to talk to as many collegues as possible
+                    before the get you!
+                    <br />
+                    <br />
+                    <br />
+                    use the arrow keys to move!
+                </p>
+            </article>
+        </div>
         <script src="./js/main.js"></script>
     </body>
 </html>
