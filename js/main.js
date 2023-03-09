@@ -97,7 +97,6 @@ class Game {
             //implemented in the future to have different behaviour.
             if (timeCounter % 100 === 0) {
                 this.enemy.shoot(this.obstacles);
-                shootSound.play();
             }
             // create co-worker every ? seconds
 
@@ -219,14 +218,17 @@ class Enemy {
         if (Math.random() > 0.4) {
             //calculate the start position of the obstacle which is directly
             //left to the enemy. The Y axis is inherited form enemy.
-            const obstaclePositionX = this.posX - this.width;
+
             const obstacle = new Obstacle(
                 10,
                 10,
-                [obstaclePositionX, this.posY],
+                [this.posX, this.posY],
                 "killer-package"
             );
             obstacleArr.push(obstacle);
+            shootSound.pause();
+            shootSound.currentTime = 0;
+            shootSound.play();
         }
     }
 }
