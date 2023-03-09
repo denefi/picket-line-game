@@ -1,6 +1,11 @@
 // audio files
 const evil_laugh = new Audio("./audio/evil-laugh.opus");
 const saccoVanzetti = new Audio("./audio/sacco-vanzetti.opus");
+const hit = new Audio("./audio/hit.wav");
+const gameMusic = new Audio("./audio/game-music.mp3");
+gameMusic.loop = true;
+const scoreUpSound = new Audio("./audio/score-up.wav");
+const shootSound = new Audio("./audio/shoot.opus");
 //helper Function
 function widthRatioConverter(size = 0) {
     //takes the size of the width an converts it to 16:9 ratio for board.
@@ -20,6 +25,7 @@ class Game {
     startGame() {
         this.createBasicElements();
         this.setEventListeners();
+        gameMusic.play();
         this.startGameLogik();
     }
     createBasicElements() {
@@ -65,10 +71,12 @@ class Game {
                         if (obstacle.type === "killer-package") {
                             this.player.lifes--;
                             this.displayLifes(this.player);
+                            hit.play();
                         }
                         if (obstacle.type === "co-worker") {
                             this.score++;
                             this.updateScoreDisplay();
+                            scoreUpSound.play();
                         }
                         obstacle.delete(this.obstacles);
                         if (this.score >= 3) {
@@ -89,6 +97,7 @@ class Game {
             //implemented in the future to have different behaviour.
             if (timeCounter % 100 === 0) {
                 this.enemy.shoot(this.obstacles);
+                shootSound.play();
             }
             // create co-worker every ? seconds
 
@@ -108,6 +117,7 @@ class Game {
         }, 1);
     }
     stopGame(winOrLoose) {
+        gameMusic.pause();
         clearInterval(this.gameTimer);
         const childNodes = this.boardElm.childNodes;
         childNodes.forEach((node) => node.remove());
