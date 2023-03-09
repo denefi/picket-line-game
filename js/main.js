@@ -32,7 +32,7 @@ class Game {
         this.updateScoreDisplay();
     }
     updateScoreDisplay() {
-        const paragraph = (this.scoreElm.innerText = `Score: ${this.score}`);
+        const paragraph = (this.scoreElm.innerText = `Score: ${this.score}/3`);
     }
     displayLifes(creature) {
         this.lifesElm.innerHTML = "";

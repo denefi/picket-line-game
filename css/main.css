@@ -94,7 +94,10 @@ article p {
 }
 #co-worker {
     position: absolute;
-    background-color: blue;
+    background-image: url("./../img/worker.png");
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position-x: left;
 }
 
 .end-of-game-img {
