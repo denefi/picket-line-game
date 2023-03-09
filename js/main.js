@@ -1,5 +1,6 @@
 // audio files
 const evil_laugh = new Audio("./audio/evil-laugh.opus");
+const saccoVanzetti = new Audio("./audio/sacco-vanzetti.opus");
 //helper Function
 function widthRatioConverter(size = 0) {
     //takes the size of the width an converts it to 16:9 ratio for board.
@@ -7,11 +8,13 @@ function widthRatioConverter(size = 0) {
 }
 class Game {
     constructor() {
-        this.gameControlElm = null;
-        this.boardElm = null;
+        this.lifesElm = document.getElementById("lifes");
+        this.boardElm = document.getElementById("board");
+        this.scoreElm = document.querySelector("#score p");
+        this.score = 0;
+        this.obstacles = [];
         this.player = null;
         this.enemy = null;
-        this.obstacles = [];
         this.gameTimer = null;
     }
     startGame() {
@@ -20,14 +23,16 @@ class Game {
         this.startGameLogik();
     }
     createBasicElements() {
-        this.lifesElm = document.getElementById("lifes");
-        this.boardElm = document.getElementById("board");
         this.boardElm.innerHTML = "";
         this.player = new Player(15, [0, 0], 3);
         this.boardElm.appendChild(this.player.playerElm);
         this.enemy = new Enemy(20, [100, 50]);
         this.boardElm.appendChild(this.enemy.enemyElm);
         this.displayLifes(this.player);
+        this.updateScoreDisplay();
+    }
+    updateScoreDisplay() {
+        const paragraph = (this.scoreElm.innerText = `Score: ${this.score}`);
     }
     displayLifes(creature) {
         this.lifesElm.innerHTML = "";
@@ -52,14 +57,25 @@ class Game {
             if (timeCounter % 17 === 0) {
                 this.enemy.move(3);
                 this.obstacles.forEach((obstacle) => {
+                    //right now all obstacle types move at the same speed
                     obstacle.move();
+                    // Collision
                     if (obstacle.detectCollision(this.player)) {
-                        this.player.lifes--;
-                        this.displayLifes(this.player);
+                        //Collison of bad obstacle reduces players life
+                        if (obstacle.type === "killer-package") {
+                            this.player.lifes--;
+                            this.displayLifes(this.player);
+                        }
+                        if (obstacle.type === "co-worker") {
+                            this.score++;
+                            this.updateScoreDisplay();
+                        }
                         obstacle.delete(this.obstacles);
-                        console.log(`Lifes left: ${this.player.lifes}`);
+                        if (this.score >= 3) {
+                            this.stopGame("winner");
+                        }
                         if (this.player.lifes <= 0) {
-                            this.stopGame();
+                            this.stopGame("looser");
                             evil_laugh.play();
                         }
                     }
@@ -68,26 +84,55 @@ class Game {
                     }
                 });
             }
+            // Enemy trying to shoot obstacles every 0.1 seconds
+            // a obstacle array is passed as different arrays could be
+            //implemented in the future to have different behaviour.
             if (timeCounter % 100 === 0) {
                 this.enemy.shoot(this.obstacles);
+            }
+            // create co-worker every ? seconds
+
+            if (timeCounter % 1000 === 0) {
+                const coWorker = new Obstacle(
+                    15,
+                    10,
+                    [120, Math.floor(Math.random() * 85)],
+                    "co-worker"
+                );
+                console.log(coWorker);
+                this.obstacles.push(coWorker);
             }
             if (timeCounter > 9007199254740990) {
                 timeCounter = 0;
             }
         }, 1);
     }
-    stopGame() {
+    stopGame(winOrLoose) {
         clearInterval(this.gameTimer);
         const childNodes = this.boardElm.childNodes;
         childNodes.forEach((node) => node.remove());
         this.obstacles = [];
         this.boardElm.innerHTML = "";
-        const gameOverH1 = document.createElement("h1");
-        gameOverH1.innerText = "Game Over";
-        const gameOverImg = document.createElement("div");
-        gameOverImg.id = "game-over-img";
-        this.boardElm.appendChild(gameOverH1);
-        this.boardElm.appendChild(gameOverImg);
+        if (winOrLoose === "looser") {
+            const gameOverH1 = document.createElement("h1");
+            gameOverH1.innerText = "Game Over";
+            const gameOverImg = document.createElement("div");
+            gameOverImg.id = "game-over-img";
+            gameOverImg.classList.add("end-of-game-img");
+
+            this.boardElm.appendChild(gameOverH1);
+            this.boardElm.appendChild(gameOverImg);
+            evil_laugh.play();
+        } else if (winOrLoose === "winner") {
+            const winnerH1 = document.createElement("h1");
+            winnerH1.innerText = "BAM, the warehouse has been unionized!";
+            const winnerImg = document.createElement("div");
+            winnerImg.id = "winner-img";
+            winnerImg.classList.add("end-of-game-img");
+            this.boardElm.appendChild(winnerH1);
+            this.boardElm.appendChild(winnerImg);
+            saccoVanzetti.play();
+        }
     }
 }
 
@@ -167,6 +212,7 @@ class Enemy {
             const obstaclePositionX = this.posX - this.width;
             const obstacle = new Obstacle(
                 10,
+                10,
                 [obstaclePositionX, this.posY],
                 "killer-package"
             );
@@ -176,9 +222,14 @@ class Enemy {
 }
 
 class Obstacle {
-    constructor(size = 20, positionArr = [0, 0], obstacleType = "") {
-        this.height = size;
-        this.width = widthRatioConverter(size);
+    constructor(
+        length = 20,
+        width = 20,
+        positionArr = [0, 0],
+        obstacleType = ""
+    ) {
+        this.height = length;
+        this.width = widthRatioConverter(width);
         [this.posX, this.posY] = positionArr;
         this.type = obstacleType;
         this.obstacleElm = null;
@@ -187,6 +238,12 @@ class Obstacle {
     }
     createObstacleElm() {
         this.obstacleElm = document.createElement("div");
+        if (this.type === "killer-package") {
+            this.obstacleElm.id = "killer-package";
+        }
+        if (this.type === "co-worker") {
+            this.obstacleElm.id = "co-worker";
+        }
         this.obstacleElm.classList += "obstacle";
         this.obstacleElm.style.height = this.height + "%";
         this.obstacleElm.style.width = this.width + "%";
@@ -197,8 +254,8 @@ class Obstacle {
         const parentElm = document.getElementById("board");
         parentElm.appendChild(this.obstacleElm);
     }
-    move() {
-        this.posX = this.posX - 2;
+    move(speed = 2) {
+        this.posX -= speed;
         this.obstacleElm.style.left = this.posX + "%";
     }
     detectCollision(otherElement) {
@@ -206,7 +263,7 @@ class Obstacle {
             otherElement.posX < this.posX + this.width &&
             otherElement.posX + otherElement.width > this.posX &&
             otherElement.posY < this.posY + this.height &&
-            otherElement.posY + otherElement.width > this.posY
+            otherElement.height + otherElement.posY > this.posY
         ) {
             return true;
         }
@@ -214,10 +271,10 @@ class Obstacle {
     }
     delete(obstacleArr) {
         this.obstacleElm.remove();
-        obstacleArr.shift();
+        obstacleArr.splice(obstacleArr.indexOf(this), 1);
     }
     outOfGame() {
-        return this.posX < 0;
+        return this.posX < -30;
     }
 }
 
@@ -227,8 +284,10 @@ startGameButton.addEventListener("click", () => {
     if (game) {
         game.stopGame();
     }
-    evil_laugh.pause();
+    evil_laugh.pause;
     evil_laugh.currentTime = 0;
+    saccoVanzetti.pause();
+    saccoVanzetti.currentTime = 0;
     game = new Game();
     game.startGame();
 });

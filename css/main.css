@@ -37,6 +37,7 @@ article {
     width: 25%;
     display: flex;
     justify-content: left;
+    border: #000;
 }
 #lifes > div {
     margin-left: 2px;
@@ -46,7 +47,15 @@ article {
     background-size: contain;
 }
 #score {
+    display: flex;
+    justify-content: right;
+    border: #000;
     width: 25%;
+}
+#score p {
+    font-family: sans-serif;
+    font-size: 16px;
+    text-transform: uppercase;
 }
 article p {
     font-size: 1em;
@@ -77,19 +86,28 @@ article p {
     background-size: contain;
     background-repeat: no-repeat;
 }
-.obstacle {
+#killer-package {
     position: absolute;
     background-color: grey;
     background-image: url("./../img/killer-package.png");
     background-size: contain;
 }
+#co-worker {
+    position: absolute;
+    background-color: blue;
+}
 
-#game-over-img {
+.end-of-game-img {
     width: 50vh;
     height: 50vh;
-    background-image: url("./../img/game-over.png");
     background-size: contain;
     background-repeat: no-repeat;
+}
+#winner-img {
+    background-image: url("./../img/Anarchist_black_cat.svg.png");
+}
+#game-over-img {
+    background-image: url("./../img/game-over.png");
 }
 /* Button design by Michael McMillan */
 #start-game {
