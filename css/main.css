@@ -24,6 +24,10 @@ article {
     border: #000;
     background-color: snow;
     border-style: solid;
+    list-style: none;
+}
+p {
+    padding: 5px;
 }
 #game-control-container {
     height: 10vh;
@@ -141,4 +145,18 @@ article p {
     #start-game {
         padding: 0.25em 0.75em;
     }
+}
+#credits {
+    text-align: center;
+    color: #000;
+}
+#credit-page {
+    margin: 10% auto;
+    padding: 10px;
+    border: #000;
+    border-style: solid;
+    width: 20%;
+    display: flex;
+    flex-direction: column;
+    align-items: baseline;
 }
